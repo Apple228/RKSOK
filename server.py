@@ -1,6 +1,7 @@
 import asyncio
 
 from config import ENCODING
+from parse_message import parse_client_request
 
 
 async def handler_client_request(reader, writer):
@@ -12,10 +13,16 @@ async def handler_client_request(reader, writer):
             break
     message = data.decode(ENCODING)
     addr = writer.get_extra_info('peername')
-
-
-
     print(f"Received {message!r} from {addr!r}")
+
+    parsed_request = parse_client_request(message)
+
+    if parsed_request:
+        requested_verb = parsed_request[0]
+        name = parsed_request[1]
+        encoding_name_name = parsed_request[2]
+        request_body = parsed_request[3]
+
     sample_answer = "НИНАШОЛ РКСОК/1.0"
     print(f"Send: {message!r}")
     # print(data)
