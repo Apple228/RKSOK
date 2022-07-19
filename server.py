@@ -1,8 +1,8 @@
 import asyncio
 
 from config import ENCODING, RequestVerb
-from db_api import get_user
-from parse_message import parse_client_request
+from db_api import get_user, add_new_user
+from parse_message import parse_client_request, forms_response_to_client
 
 
 async def handler_client_request(reader, writer):
@@ -22,22 +22,21 @@ async def handler_client_request(reader, writer):
     if parsed_request:
         requested_verb = parsed_request[0]
         name = parsed_request[1]
-        encoding_name = parsed_request[2]
-        request_body = parsed_request[3]
+        request_body = parsed_request[2]
         if True:  # сервер проверки вернул true:
             if requested_verb == RequestVerb.GET:
-                processed_client_request = await get_user(name, encoding_name)
-            # elif requested_verb == RequestVerb.WRITE:
-            #     processed_client_request = await add_new_user(request_body, name, encoding_name)
+                processed_client_request = await get_user(name)
+            elif requested_verb == RequestVerb.WRITE:
+                processed_client_request = await add_new_user(request_body, name)
             # elif requested_verb == RequestVerb.DELETE:
             #     processed_client_request = await delete_user(name, encoding_name)
-            # response_to_client = forms_response_to_client(processed_client_request)
+            response_to_client = forms_response_to_client(processed_client_request)
 
 
-    sample_answer = "НИНАШОЛ РКСОК/1.0"
-    print(f"Send: {message!r}")
-    # print(data)
-    writer.write(data)
+
+    print(f"Send: {response_to_client!r}")
+
+    writer.write(response_to_client.encode(ENCODING))
     await writer.drain()
 
     print("Close the connection")
