@@ -33,6 +33,8 @@ async def handler_client_request(reader, writer):
             elif requested_verb == RequestVerb.DELETE:
                 processed_client_request = await delete_user(name)
             response_to_client = forms_response_to_client(processed_client_request)
+        else:
+            response_to_client = validation_server_request
     else:  # Not correct request from client.
         response_to_client = forms_response_to_client(ResponseStatus.INCORRECT_REQUEST)
 
