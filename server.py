@@ -1,8 +1,9 @@
 import asyncio
 
-from config import ENCODING, RequestVerb
-from db_api import get_user, add_new_user
+from config import ENCODING, RequestVerb, ResponseStatus
+from db_api import get_user, add_new_user, delete_user
 from parse_message import parse_client_request, forms_response_to_client
+from validation import validation_server_request
 
 
 async def handler_client_request(reader, writer):
@@ -23,16 +24,17 @@ async def handler_client_request(reader, writer):
         requested_verb = parsed_request[0]
         name = parsed_request[1]
         request_body = parsed_request[2]
-        if True:  # сервер проверки вернул true:
+        validation_server_response = await validation_server_request(message)
+        if validation_server_response.startswith(ResponseStatus.APPROVED.value):  # сервер проверки вернул true:
             if requested_verb == RequestVerb.GET:
                 processed_client_request = await get_user(name)
             elif requested_verb == RequestVerb.WRITE:
                 processed_client_request = await add_new_user(request_body, name)
-            # elif requested_verb == RequestVerb.DELETE:
-            #     processed_client_request = await delete_user(name, encoding_name)
+            elif requested_verb == RequestVerb.DELETE:
+                processed_client_request = await delete_user(name)
             response_to_client = forms_response_to_client(processed_client_request)
-
-
+    else:  # Not correct request from client.
+        response_to_client = forms_response_to_client(ResponseStatus.INCORRECT_REQUEST)
 
     print(f"Send: {response_to_client!r}")
 

@@ -15,8 +15,11 @@ class ResponseStatus(Enum):
     OK = "НОРМАЛДЫКС"
     NOTFOUND = "НИНАШОЛ"
     NOT_APPROVED = "НИЛЬЗЯ"
+    APPROVED = "МОЖНА"
     INCORRECT_REQUEST = "НИПОНЯЛ"
 
 
 PROTOCOL = "РКСОК/1.0"
 ENCODING = "UTF-8"
+VALIDATION_SERVER_URL = "vragi-vezde.to.digital"
+VALIDATION_SERVER_PORT = 51624

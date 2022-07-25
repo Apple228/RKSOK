@@ -1,6 +1,7 @@
 from typing import Union
 
-import aiofiles as aiofiles
+import aiofiles
+from aiofiles.os import remove
 
 from config import ResponseStatus, PROTOCOL
 
@@ -12,10 +13,8 @@ async def get_user(name: str) -> Union[ResponseStatus, tuple]:
     try:
         async with aiofiles.open(f"db/{name}", 'r', encoding='utf-8') as file:
             user = await file.read()
-        print(user)
-
         return (ResponseStatus.OK, user)
-    except (FileExistsError, FileNotFoundError):
+    except (FileExistsError, FileNotFoundError, OSError):
         return ResponseStatus.NOTFOUND
 
 
@@ -28,3 +27,14 @@ async def add_new_user(request_body, name) ->ResponseStatus:
         async with aiofiles.open(f"db/{name}", 'w', encoding='utf-8') as file:
             await file.write(request_body)
         return ResponseStatus.OK
+
+
+async def delete_user(name: str) -> ResponseStatus:
+    try:
+        await remove(f"db/{name}")
+        return ResponseStatus.OK
+    except (FileExistsError, FileNotFoundError):
+        return ResponseStatus.NOTFOUND
+
+
+
