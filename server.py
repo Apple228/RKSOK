@@ -46,7 +46,7 @@ async def handler_client_request(reader, writer):
 
 async def main():
     server = await asyncio.start_server(
-        handler_client_request, '127.0.0.1', 8888)
+        handler_client_request, '85.143.175.87', 8888)
 
     addrs = ', '.join(str(sock.getsockname()) for sock in server.sockets)
     print(f'Serving on {addrs}')
