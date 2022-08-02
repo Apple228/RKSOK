@@ -4,6 +4,14 @@ from config import VALIDATION_SERVER_PORT, VALIDATION_SERVER_URL, PROTOCOL, ENCO
 
 
 async def validation_server_request(message: str) -> str:
+    """
+    Request permission to the verification server
+
+    Args:
+        message(str) : Request from client
+     Returns:
+        (str): Decoded response from verification server
+    """
     reader, writer = await asyncio.open_connection(
         VALIDATION_SERVER_URL, VALIDATION_SERVER_PORT
     )

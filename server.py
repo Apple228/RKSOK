@@ -17,7 +17,7 @@ async def handler_client_request(reader: {read},
     """Handler for processing the request and response to the client
         Arguments:
             reader: a stream to receive any data from the client.
-            Writer: A stream for sending parsed and processed client data.
+            writer: A stream for sending parsed and processed client data.
     """
     data = b''
     while True:

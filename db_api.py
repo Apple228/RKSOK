@@ -8,7 +8,16 @@ from config import ResponseStatus, PROTOCOL
 
 
 async def get_user(name: str) -> Union[ResponseStatus, tuple]:
-    logging.info(f'Ищю {name}')
+    """
+    Search for a user in the database
+
+     Args:
+         name(str): Name from client request.
+    Returns:
+          Union[ResponsePhrase, tuple]: ResponseStatus OK
+          and user_data from file or ResponseStatus NOTFOUND.
+
+    """
     print(f'Ищю {name}')
     print(ResponseStatus.OK.value+PROTOCOL)
     try:
@@ -20,6 +29,16 @@ async def get_user(name: str) -> Union[ResponseStatus, tuple]:
 
 
 async def add_new_user(request_body: str, name: str) ->ResponseStatus:
+    """
+        Add new user in the database
+
+     Args:
+        request_body(str): Body data from client response.
+        name(str): Name from client request.
+     Returns:
+         ResponseStatus OK
+
+    """
     try:
         async with aiofiles.open(f'db/{name}', 'x', encoding='utf-8') as file:
             await file.write(request_body)
@@ -31,6 +50,14 @@ async def add_new_user(request_body: str, name: str) ->ResponseStatus:
 
 
 async def delete_user(name: str) -> ResponseStatus:
+    """
+    Delete user from database
+
+    Args:
+        name(str):  name(str): Name from client request.
+    Returns:
+        ResponseStatus OK or NOTFOUND
+    """
     try:
         await remove(f"db/{name}")
         return ResponseStatus.OK
