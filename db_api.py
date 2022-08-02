@@ -1,3 +1,4 @@
+import logging
 from typing import Union
 
 import aiofiles
@@ -7,8 +8,8 @@ from config import ResponseStatus, PROTOCOL
 
 
 async def get_user(name: str) -> Union[ResponseStatus, tuple]:
+    logging.info(f'Ищю {name}')
     print(f'Ищю {name}')
-    user = ('name', '123')
     print(ResponseStatus.OK.value+PROTOCOL)
     try:
         async with aiofiles.open(f"db/{name}", 'r', encoding='utf-8') as file:

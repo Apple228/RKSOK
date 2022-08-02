@@ -1,12 +1,24 @@
 import asyncio
+import logging
+import sys
+from asyncore import read, write
+
+from _socket import close
 
 from config import ENCODING, RequestVerb, ResponseStatus
 from db_api import get_user, add_new_user, delete_user
+from exceptions import NotSpecifiedIPOrPortError, process_critical_exception
 from parse_message import parse_client_request, forms_response_to_client
 from validation import validation_server_request
 
 
-async def handler_client_request(reader, writer):
+async def handler_client_request(reader: {read},
+                                 writer: {write, close}):
+    """Handler for processing the request and response to the client
+        Arguments:
+            reader: a stream to receive any data from the client.
+            Writer: A stream for sending parsed and processed client data.
+    """
     data = b''
     while True:
         line = await reader.read(1024)
@@ -15,10 +27,10 @@ async def handler_client_request(reader, writer):
             break
     message = data.decode(ENCODING)
     addr = writer.get_extra_info('peername')
+    logging.info(f"Received {message!r} from {addr!r}")
     print(f"Received {message!r} from {addr!r}")
 
     parsed_request = parse_client_request(message)
-
 
     if parsed_request:
         requested_verb = parsed_request[0]
@@ -46,14 +58,27 @@ async def handler_client_request(reader, writer):
     print("Close the connection")
     writer.close()
 
+
 async def main():
-    server = await asyncio.start_server(
-        handler_client_request, '85.143.175.87', 8888)
+    """
+    main function starts the server
+    """
+    try:
+        server = await asyncio.start_server(
+            handler_client_request, sys.argv[1], int(sys.argv[2]))
+    except NotSpecifiedIPOrPortError:
+        process_critical_exception(
+            "Упс! Меня запускать надо так:\n\n"
+            "python server.py SERVER PORT\n\n"
+            "где SERVER и PORT — это домен и порт РКСОР сервера, "
+            "на котором сервер должен запуститься. Например:\n\n"
+            "python server.py my-rksok-server.ru 5555\n")
 
     addrs = ', '.join(str(sock.getsockname()) for sock in server.sockets)
     print(f'Serving on {addrs}')
 
     async with server:
         await server.serve_forever()
+
 
 asyncio.run(main())
