@@ -26,7 +26,7 @@ def parse_client_request(message: str) -> Optional[tuple]:
         return None
 
     for verb in RequestVerb:
-        if message.startswith(verb.value):
+        if message.split()[0] == verb.value:
             name = take_name(message)
             request_body = ''.join(message.split('\r\n', 1)[1])
             break  # If found existing request verb.
