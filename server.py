@@ -52,7 +52,7 @@ async def handler_client_request(reader: {read},
 
     print(f"Send: {response_to_client!r}")
 
-    writer.write(response_to_client.encode(ENCODING))
+    writer.write(f"{response_to_client}".encode(ENCODING))
     await writer.drain()
 
     print("Close the connection")

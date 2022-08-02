@@ -19,7 +19,7 @@ async def get_user(name: str) -> Union[ResponseStatus, tuple]:
         return ResponseStatus.NOTFOUND
 
 
-async def add_new_user(request_body, name) ->ResponseStatus:
+async def add_new_user(request_body: str, name: str) ->ResponseStatus:
     try:
         async with aiofiles.open(f'db/{name}', 'x', encoding='utf-8') as file:
             await file.write(request_body)
