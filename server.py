@@ -1,11 +1,12 @@
 import asyncio
 import logging
+import os
 import sys
 from asyncore import read, write
 
 from _socket import close
 
-from config import ENCODING, RequestVerb, ResponseStatus
+from config import ENCODING, RequestVerb, ResponseStatus, DB_DIR
 from db_api import get_user, add_new_user, delete_user
 from exceptions import NotSpecifiedIPOrPortError, process_critical_exception
 from parse_message import parse_client_request, forms_response_to_client
@@ -63,6 +64,8 @@ async def main():
     """
     main function starts the server
     """
+    if not os.path.exists(DB_DIR):
+        os.mkdir(DB_DIR)
     try:
         server = await asyncio.start_server(
             handler_client_request, sys.argv[1], int(sys.argv[2]))

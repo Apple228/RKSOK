@@ -4,7 +4,7 @@ from typing import Union
 import aiofiles
 from aiofiles.os import remove
 
-from config import ResponseStatus, PROTOCOL
+from config import ResponseStatus, PROTOCOL, DB_DIR
 
 
 async def get_user(name: str) -> Union[ResponseStatus, tuple]:
@@ -20,8 +20,9 @@ async def get_user(name: str) -> Union[ResponseStatus, tuple]:
     """
     print(f'Ищю {name}')
     print(ResponseStatus.OK.value+PROTOCOL)
+    # про хранение хеша вместо имени файла в курсе, просто не успел переделать
     try:
-        async with aiofiles.open(f"db/{name}", 'r', encoding='utf-8') as file:
+        async with aiofiles.open(f"{DB_DIR}/{name}", 'r', encoding='utf-8') as file:
             user = await file.read()
         return (ResponseStatus.OK, user)
     except (FileExistsError, FileNotFoundError, OSError):
@@ -40,11 +41,11 @@ async def add_new_user(request_body: str, name: str) ->ResponseStatus:
 
     """
     try:
-        async with aiofiles.open(f'db/{name}', 'x', encoding='utf-8') as file:
+        async with aiofiles.open(f'{DB_DIR}/{name}', 'x', encoding='utf-8') as file:
             await file.write(request_body)
         return ResponseStatus.OK
     except FileExistsError:
-        async with aiofiles.open(f"db/{name}", 'w', encoding='utf-8') as file:
+        async with aiofiles.open(f"{DB_DIR}/{name}", 'w', encoding='utf-8') as file:
             await file.write(request_body)
         return ResponseStatus.OK
 
@@ -59,7 +60,7 @@ async def delete_user(name: str) -> ResponseStatus:
         ResponseStatus OK or NOTFOUND
     """
     try:
-        await remove(f"db/{name}")
+        await remove(f"{DB_DIR}/{name}")
         return ResponseStatus.OK
     except (FileExistsError, FileNotFoundError):
         return ResponseStatus.NOTFOUND
